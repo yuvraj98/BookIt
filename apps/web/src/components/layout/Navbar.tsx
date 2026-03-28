@@ -121,13 +121,13 @@ export function Navbar() {
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) =>
                 link.highlight ? (
-                  <Link key={link.href} href={link.href} className="btn-primary text-sm py-2 px-4 ml-2">
+                  <Link key={link.href} href={link.href as any} className="btn-primary text-sm py-2 px-4 ml-2">
                     {link.label}
                   </Link>
                 ) : (
                   <Link
                     key={link.href}
-                    href={link.href}
+                    href={link.href as any}
                     className="btn-ghost text-sm"
                   >
                     {link.label}
@@ -179,7 +179,7 @@ export function Navbar() {
                         </div>
 
                         <Link
-                          href="/profile"
+                          href={"/profile" as any}
                           onClick={() => setProfileOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#a0a0a0] hover:text-white hover:bg-white/5 transition-colors"
                         >
@@ -188,7 +188,7 @@ export function Navbar() {
                         </Link>
 
                         <Link
-                          href="/profile/bookings"
+                          href={"/profile/bookings" as any}
                           onClick={() => setProfileOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#a0a0a0] hover:text-white hover:bg-white/5 transition-colors"
                         >
@@ -198,7 +198,7 @@ export function Navbar() {
 
                         {user.role === 'organiser' && (
                           <Link
-                            href="/organiser/dashboard"
+                            href={"/organiser/dashboard" as any}
                             onClick={() => setProfileOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-purple-400 hover:text-purple-300 hover:bg-purple-500/5 transition-colors"
                           >
@@ -209,7 +209,7 @@ export function Navbar() {
 
                         {user.role === 'admin' && (
                           <Link
-                            href="/admin/dashboard"
+                            href={"/admin/dashboard" as any}
                             onClick={() => setProfileOpen(false)}
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors"
                           >
@@ -265,7 +265,7 @@ export function Navbar() {
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
-                    href={link.href}
+                    href={link.href as any}
                     onClick={() => setMobileOpen(false)}
                     className={`block px-4 py-3 rounded-xl text-sm font-medium transition-colors
                       ${link.highlight
@@ -297,10 +297,10 @@ export function Navbar() {
                           </span>
                         )}
                       </div>
-                      <Link href="/profile" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm text-[#a0a0a0] hover:text-white hover:bg-white/5 rounded-lg">
+                      <Link href={"/profile" as any} onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm text-[#a0a0a0] hover:text-white hover:bg-white/5 rounded-lg">
                         My Profile
                       </Link>
-                      <Link href="/profile/bookings" onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm text-[#a0a0a0] hover:text-white hover:bg-white/5 rounded-lg">
+                      <Link href={"/profile/bookings" as any} onClick={() => setMobileOpen(false)} className="block px-4 py-2.5 text-sm text-[#a0a0a0] hover:text-white hover:bg-white/5 rounded-lg">
                         My Bookings
                       </Link>
                       {user.role === 'organiser' && (

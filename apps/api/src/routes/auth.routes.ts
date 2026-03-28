@@ -158,6 +158,35 @@ router.get('/me', authenticate, async (req: AuthenticatedRequest, res, next) => 
   }
 })
 
+// ─── PUT /auth/me — Update profile ────────────────────────────
+const updateProfileSchema = z.object({
+  name: z.string().min(2).max(100).optional(),
+  email: z.string().email().max(255).optional(),
+})
+
+router.put('/me', authenticate, validate(updateProfileSchema), async (req: AuthenticatedRequest, res, next) => {
+  try {
+    const { name, email } = req.body
+    
+    const { data, error } = await supabase
+      .from('users')
+      .update({ name, email })
+      .eq('id', req.user!.id)
+      .select()
+      .single()
+
+    if (error) throw new AppError(500, 'Failed to update profile', 'DB_ERROR')
+
+    res.json({
+      success: true,
+      data,
+      message: 'Profile updated successfully',
+    })
+  } catch (err) {
+    next(err)
+  }
+})
+
 // ─── POST /auth/logout ────────────────────────────────────────
 router.post('/logout', authenticate, async (_req, res) => {
   // Client should delete tokens — server stateless with JWT

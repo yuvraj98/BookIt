@@ -185,14 +185,14 @@ export function UserBookings() {
                     </div>
 
                     {booking.status === 'confirmed' && !isPast && (
-                      <Link href={`/profile/bookings/${booking.id}`} className="btn-secondary px-4 py-2 text-sm bg-surface-900 border-white/10 shadow-glow">
+                      <Link href={`/profile/bookings/${booking.id}` as any} className="btn-secondary px-4 py-2 text-sm bg-surface-900 border-white/10 shadow-glow">
                         <QrCode size={16} />
                         View Ticket
                       </Link>
                     )}
                     
                     {booking.status === 'pending' && (
-                      <Link href={`/profile/bookings/${booking.id}/pay`} className="btn-primary px-4 py-2 text-sm shadow-glow">
+                      <Link href={`/profile/bookings/${booking.id}/pay` as any} className="btn-primary px-4 py-2 text-sm shadow-glow">
                         Pay Now
                       </Link>
                     )}
