@@ -1,11 +1,12 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 import {
   QrCode,
   Calendar,
@@ -17,6 +18,7 @@ import {
   Shield,
   Clock as ClockIcon,
   Ticket,
+  XCircle,
 } from 'lucide-react'
 
 interface BookingDetail {
@@ -45,6 +47,7 @@ interface BookingDetail {
 
 export function BookingTicketView({ bookingId }: { bookingId: string }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { isAuthenticated, isLoading: authLoading } = useAuthStore()
 
   useEffect(() => {
@@ -62,6 +65,28 @@ export function BookingTicketView({ bookingId }: { bookingId: string }) {
     enabled: isAuthenticated,
   })
 
+  const cancelMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.post(`/bookings/${bookingId}/cancel`)
+      return res.data
+    },
+    onSuccess: (res: any) => {
+      toast.success(res.message || 'Booking cancelled successfully')
+      queryClient.invalidateQueries({ queryKey: ['booking', bookingId] })
+      queryClient.invalidateQueries({ queryKey: ['userBookings'] })
+      router.push('/profile/bookings')
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.error || 'Failed to cancel booking')
+    },
+  })
+
+  const handleCancel = () => {
+    if (confirm('Are you sure you want to cancel this booking? Seats will be released and any payment will be refunded.')) {
+      cancelMutation.mutate()
+    }
+  }
+
   if (isLoading || authLoading) {
     return (
       <div className="max-w-md mx-auto animate-pulse space-y-6 py-8">
@@ -75,7 +100,7 @@ export function BookingTicketView({ bookingId }: { bookingId: string }) {
     return (
       <div className="max-w-md mx-auto text-center py-16">
         <h2 className="text-2xl font-display font-bold mb-4">Booking not found</h2>
-        <Link href="/profile/bookings" className="btn-primary">View My Bookings</Link>
+        <Link href={"/profile/bookings" as any} className="btn-primary">View My Bookings</Link>
       </div>
     )
   }
@@ -83,6 +108,7 @@ export function BookingTicketView({ bookingId }: { bookingId: string }) {
   const eventDate = new Date(booking.events.starts_at)
   const isPast = eventDate < new Date()
   const isConfirmed = booking.status === 'confirmed'
+  const canCancel = (booking.status === 'confirmed' || booking.status === 'pending') && !isPast
 
   return (
     <div className="max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4">
@@ -228,17 +254,34 @@ export function BookingTicketView({ bookingId }: { bookingId: string }) {
             </div>
 
             {/* Actions */}
-            {booking.status === 'pending' && (
-              <Link 
-                href={`/profile/bookings/${bookingId}/pay`} 
-                className="btn-primary w-full justify-center shadow-glow animate-pulse"
-              >
-                Complete Payment
-              </Link>
-            )}
+            <div className="flex flex-col gap-3">
+              {booking.status === 'pending' && (
+                <Link 
+                  href={`/profile/bookings/${bookingId}/pay` as any} 
+                  className="btn-primary w-full justify-center shadow-glow animate-pulse"
+                >
+                  Complete Payment
+                </Link>
+              )}
+
+              {canCancel && (
+                <button
+                  onClick={handleCancel}
+                  disabled={cancelMutation.isPending}
+                  className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl text-sm font-semibold
+                             text-red-400 border border-red-500/20 bg-red-500/5
+                             hover:bg-red-500/10 hover:border-red-500/30 transition-all
+                             disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <XCircle size={16} />
+                  {cancelMutation.isPending ? 'Cancelling...' : 'Cancel Booking'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
   )
 }
+

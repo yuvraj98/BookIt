@@ -30,13 +30,13 @@ export function ExploreEvents({ initialCategory }: { initialCategory?: string })
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [city, setCity] = useState('Pune')
 
-  // Simple debounce
-  useState(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search)
-    }, 500)
-    return () => clearTimeout(handler)
-  }, [search])
+  // Proper debounce
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
+  const handleSearchChange = (value: string) => {
+    setSearch(value)
+    if (searchTimeout) clearTimeout(searchTimeout)
+    setSearchTimeout(setTimeout(() => { setDebouncedSearch(value) }, 500))
+  }
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['events', category, debouncedSearch, city],
@@ -89,7 +89,7 @@ export function ExploreEvents({ initialCategory }: { initialCategory?: string })
               type="text"
               placeholder="Search events..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="input pl-10 py-2.5 bg-surface-800/50"
             />
           </div>

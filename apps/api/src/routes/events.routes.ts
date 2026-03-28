@@ -42,6 +42,13 @@ router.get('/', validate(eventFiltersSchema, 'query'), async (req, res, next) =>
     if (price_max !== undefined) query = query.lte('max_price', price_max)
     if (featured) query = query.eq('is_featured', true)
 
+    if (req.query.search) {
+      const searchTerm = String(req.query.search)
+      query = query.or(
+        `title.ilike.%${searchTerm}%,venue_name.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%`
+      )
+    }
+
     const { data, error, count } = await query
 
     if (error) throw new AppError(500, 'Failed to fetch events', 'DB_ERROR')
