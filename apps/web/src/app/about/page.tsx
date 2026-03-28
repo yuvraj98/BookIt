@@ -89,7 +89,7 @@ export default function AboutPage() {
               <Link href="/events" className="btn-primary">
                 Browse Events <ArrowRight size={16} />
               </Link>
-              <Link href="/organiser" className="btn-secondary">
+              <Link href={"/organiser" as any} className="btn-secondary">
                 List Your Event
               </Link>
             </div>

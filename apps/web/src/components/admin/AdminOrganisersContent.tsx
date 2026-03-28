@@ -32,10 +32,12 @@ export function AdminOrganisersContent() {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
 
-  useState(() => {
-    const handler = setTimeout(() => { setDebouncedSearch(search) }, 500)
-    return () => clearTimeout(handler)
-  }, [search])
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
+  const handleSearchChange = (value: string) => {
+    setSearch(value)
+    if (searchTimeout) clearTimeout(searchTimeout)
+    setSearchTimeout(setTimeout(() => { setDebouncedSearch(value) }, 500))
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['adminOrganisers', filter, debouncedSearch],
@@ -120,7 +122,7 @@ export function AdminOrganisersContent() {
             type="text"
             placeholder="Search by business name or GST..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="input w-full pl-9 py-2 bg-surface-900 border-white/10"
           />
         </div>

@@ -111,7 +111,7 @@ export default function PricingPage() {
                 </ul>
 
                 <Link 
-                  href={plan.price === 'Custom' ? '/contact' : '/organiser'}
+                  href={(plan.price === 'Custom' ? '/contact' : '/organiser') as any}
                   className={plan.highlight ? 'btn-primary w-full justify-center shadow-glow' : 'btn-secondary w-full justify-center'}
                 >
                   {plan.cta} <ArrowRight size={16} />

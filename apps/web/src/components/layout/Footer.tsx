@@ -67,7 +67,7 @@ export function Footer() {
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
-                      href={link.href}
+                      href={link.href as any}
                       className="text-sm text-[#606060] hover:text-[#a0a0a0] transition-colors duration-200"
                     >
                       {link.label}
