@@ -1,0 +1,28 @@
+{
+  "name": "bookit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BookIt — India's local events ticketing platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "type-check": "turbo type-check",
+    "clean": "turbo clean && rimraf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "packageManager": "npm@10.9.2"
+}
