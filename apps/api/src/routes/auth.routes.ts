@@ -39,12 +39,12 @@ function generateTokens(userId: string, phone: string, role: string) {
   const accessToken = jwt.sign(
     { id: userId, phone, role },
     process.env.JWT_ACCESS_SECRET!,
-    { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m' }
+    { expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || '15m') as any }
   )
   const refreshToken = jwt.sign(
     { id: userId, phone, role },
     process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    { expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '30d') as any }
   )
   return { accessToken, refreshToken }
 }
