@@ -49,12 +49,23 @@ export function LoginForm() {
     }, 1000)
   }
 
-  // Step 1: Send OTP
+  // Step 1: Send OTP (or dev-login in development)
   const onSendOtp = async ({ phone: p }: PhoneForm) => {
     setLoading(true)
     try {
-      await api.post('/auth/otp/send', { phone: `+91${p}` })
-      setPhone(`+91${p}`)
+      const fullPhone = `+91${p}`
+
+      // In development, bypass OTP and login directly
+      if (process.env.NODE_ENV === 'development') {
+        const { data } = await api.post('/auth/dev-login', { phone: fullPhone })
+        setUser(data.data.user, data.data.access_token, data.data.refresh_token)
+        toast.success(`Welcome, ${data.data.user.name || 'User'}! 🎉 (Dev login)`)
+        router.push('/')
+        return
+      }
+
+      await api.post('/auth/otp/send', { phone: fullPhone })
+      setPhone(fullPhone)
       setStep('otp')
       startTimer()
       toast.success('OTP sent to your WhatsApp and SMS')
@@ -214,7 +225,7 @@ export function LoginForm() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => phoneForm.handleSubmit(onSendOtp)({ phone: phone.slice(3) })}
+                      onClick={() => onSendOtp({ phone: phone.slice(3) })}
                       className="text-sm text-brand-400 hover:text-brand-300 transition-colors"
                     >
                       Resend OTP

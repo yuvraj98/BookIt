@@ -111,7 +111,19 @@ export function EventCreationForm() {
                 <option value="music">Music</option>
                 <option value="sports">Sports</option>
                 <option value="workshop">Workshop</option>
+                <option value="festival">Festival</option>
+                <option value="cinema">Cinema</option>
                 <option value="theatre">Theatre</option>
+                <option value="food">Food</option>
+                <option value="art">Art</option>
+                <option value="fitness">Fitness</option>
+                <option value="tech">Tech</option>
+                <option value="business">Business</option>
+                <option value="kids">Kids</option>
+                <option value="nightlife">Nightlife</option>
+                <option value="religious">Religious</option>
+                <option value="travel">Travel</option>
+                <option value="gaming">Gaming</option>
                 <option value="others">Others</option>
               </select>
             </div>

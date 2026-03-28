@@ -7,6 +7,7 @@ import { BarChart3, Calendar, Plus, Ticket, IndianRupee, Clock } from 'lucide-re
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { RevenueChart } from './RevenueChart'
 
 interface DashboardStats {
   verified: boolean
@@ -111,9 +112,9 @@ export function OrganiserDashboardContent() {
         />
       </div>
 
-      {/* Analytics Link */}
+      {/* Analytics Link & Chart */}
       <div className="mb-12">
-        <Link href={"/organiser/analytics" as any} className="card p-5 flex items-center justify-between group hover:bg-surface-800/80 transition-colors cursor-pointer border-brand-500/20">
+        <Link href={"/organiser/analytics" as any} className="card p-5 mb-6 flex items-center justify-between group hover:bg-surface-800/80 transition-colors cursor-pointer border-brand-500/20">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
               <BarChart3 size={18} className="text-brand-400" />
@@ -127,6 +128,14 @@ export function OrganiserDashboardContent() {
             <BarChart3 size={20} />
           </div>
         </Link>
+        
+        <div className="card p-6">
+          <h2 className="text-lg font-display font-bold mb-6 flex items-center gap-2">
+            <BarChart3 size={18} className="text-purple-400" />
+            Revenue Overview (Past 7 Days)
+          </h2>
+          <RevenueChart />
+        </div>
       </div>
 
       {/* Recent Events */}

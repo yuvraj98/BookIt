@@ -3,13 +3,16 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { useAuthStore } from '@/stores/authStore'
 import Link from 'next/link'
 import Image from 'next/image'
-import { MapPin, Calendar, IndianRupee, Search, Filter } from 'lucide-react'
+import { MapPin, Calendar, IndianRupee, Search, Filter, Heart } from 'lucide-react'
 import { EventCategory } from '@bookit/types'
+import toast from 'react-hot-toast'
 
 const CATEGORIES = [
-  'All', 'comedy', 'music', 'sports', 'workshop', 'theatre', 'food', 'art', 'others'
+  'All', 'comedy', 'music', 'sports', 'workshop', 'festival', 'cinema',
+  'theatre', 'fitness', 'tech', 'kids', 'nightlife', 'food', 'art', 'others'
 ]
 
 interface EventItem {
@@ -25,10 +28,45 @@ interface EventItem {
 }
 
 export function ExploreEvents({ initialCategory }: { initialCategory?: string }) {
+  const { isAuthenticated } = useAuthStore()
   const [category, setCategory] = useState(initialCategory || 'All')
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [city, setCity] = useState('Pune')
+  const [city, setCity] = useState('')
+  const [wishlistedIds, setWishlistedIds] = useState<Set<string>>(new Set())
+
+  const toggleWishlist = async (e: React.MouseEvent, eventId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!isAuthenticated) {
+      toast.error('Please login to save events')
+      return
+    }
+    const isWished = wishlistedIds.has(eventId)
+    // Optimistic update
+    setWishlistedIds(prev => {
+      const next = new Set(prev)
+      isWished ? next.delete(eventId) : next.add(eventId)
+      return next
+    })
+    try {
+      if (isWished) {
+        await api.delete(`/wishlist/${eventId}`)
+        toast.success('Removed from wishlist')
+      } else {
+        await api.post(`/wishlist/${eventId}`)
+        toast.success('Saved to wishlist!')
+      }
+    } catch {
+      // Revert on failure
+      setWishlistedIds(prev => {
+        const next = new Set(prev)
+        isWished ? next.add(eventId) : next.delete(eventId)
+        return next
+      })
+      toast.error('Failed to update wishlist')
+    }
+  }
 
   // Proper debounce
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null)
@@ -94,10 +132,11 @@ export function ExploreEvents({ initialCategory }: { initialCategory?: string })
             />
           </div>
           <select 
-            className="input py-2.5 w-32 bg-surface-800/50 app-select"
+            className="input py-2.5 w-36 bg-surface-800/50 app-select"
             value={city}
             onChange={(e) => setCity(e.target.value)}
           >
+            <option value="">All Cities</option>
             <option value="Pune">Pune</option>
             <option value="Mumbai">Mumbai</option>
             <option value="Bangalore">Bangalore</option>
@@ -132,7 +171,7 @@ export function ExploreEvents({ initialCategory }: { initialCategory?: string })
           <h3 className="text-xl font-display font-bold mb-2">No events found</h3>
           <p className="text-text-muted">Try adjusting your filters or search term.</p>
           <button 
-            onClick={() => { setCategory('All'); setSearch(''); setCity('Pune'); }}
+            onClick={() => { setCategory('All'); setSearch(''); setCity(''); }}
             className="mt-6 btn-secondary bg-surface-800 hover:bg-surface-700"
           >
             Clear Filters
@@ -155,11 +194,22 @@ export function ExploreEvents({ initialCategory }: { initialCategory?: string })
                     <span className="font-display font-bold text-lg opacity-50 text-center px-4">{event.title}</span>
                   </div>
                 )}
-                <div className="absolute top-3 right-3">
+                <div className="absolute top-3 left-3">
                   <span className="badge-brand backdrop-blur-md bg-surface-900/80 capitalize">
                     {event.category}
                   </span>
                 </div>
+                <button
+                  onClick={(e) => toggleWishlist(e, event.id)}
+                  className={`absolute top-3 right-3 w-9 h-9 rounded-full backdrop-blur-md flex items-center justify-center transition-all ${
+                    wishlistedIds.has(event.id)
+                      ? 'bg-red-500 text-white shadow-[0_0_16px_rgba(239,68,68,0.4)]'
+                      : 'bg-surface-900/60 text-white/60 hover:text-red-400 hover:bg-surface-900/80'
+                  }`}
+                  title={wishlistedIds.has(event.id) ? 'Remove from wishlist' : 'Save to wishlist'}
+                >
+                  <Heart size={16} fill={wishlistedIds.has(event.id) ? 'currentColor' : 'none'} />
+                </button>
               </div>
 
               <div className="p-5">

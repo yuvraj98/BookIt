@@ -26,6 +26,7 @@ export const metadata: Metadata = {
     'BookIt is India\'s local events ticketing platform. Discover comedy shows, music nights, workshops, sports & more in your city. Book tickets in seconds via UPI.',
   keywords: ['events in Pune', 'comedy shows Pune', 'book tickets online', 'local events India'],
   authors: [{ name: 'BookIt' }],
+  manifest: '/manifest.json',
   openGraph: {
     type: 'website',
     locale: 'en_IN',

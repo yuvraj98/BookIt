@@ -25,7 +25,9 @@ import {
   Edit3,
   Check,
   X,
+  Heart,
 } from 'lucide-react'
+import { ReferralCard } from './ReferralCard'
 
 export function ProfileContent() {
   const router = useRouter()
@@ -252,6 +254,17 @@ export function ProfileContent() {
           <ChevronRight size={18} className="text-text-subtle group-hover:text-brand-400 transition-colors" />
         </Link>
 
+        <Link href={"/profile/saved" as any} className="card p-5 flex items-center gap-4 group hover:bg-surface-800/80 transition-colors cursor-pointer">
+          <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+            <Heart size={18} className="text-red-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-white font-medium group-hover:text-red-400 transition-colors">Saved Events</h3>
+            <p className="text-xs text-text-muted">Events you have wishlisted</p>
+          </div>
+          <ChevronRight size={18} className="text-text-subtle group-hover:text-red-400 transition-colors" />
+        </Link>
+
         {user.role === 'organiser' && (
           <Link href="/organiser/dashboard" className="card p-5 flex items-center gap-4 group hover:bg-surface-800/80 transition-colors cursor-pointer">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -290,6 +303,10 @@ export function ProfileContent() {
             <ChevronRight size={18} className="text-text-subtle group-hover:text-amber-400 transition-colors" />
           </Link>
         )}
+      </div>
+
+      <div className="mb-8">
+        <ReferralCard />
       </div>
 
       {/* ─── Sign Out ──────────────────────────────────── */}

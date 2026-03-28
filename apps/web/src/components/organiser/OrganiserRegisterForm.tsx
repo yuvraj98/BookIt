@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '@/lib/api'
+import { useAuthStore } from '@/stores/authStore'
 
 // ─── Steps ─────────────────────────────────────────────────
 const STEPS = [
@@ -61,9 +62,18 @@ type BankForm = z.infer<typeof bankSchema>
 // ─── Component ──────────────────────────────────────────────
 export function OrganiserRegisterForm() {
   const router = useRouter()
+  const { isAuthenticated, isLoading: authLoading } = useAuthStore()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [businessData, setBusinessData] = useState<BusinessForm | null>(null)
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      toast.error('Please login first to register as an organiser')
+      router.push('/login')
+    }
+  }, [authLoading, isAuthenticated, router])
 
   const businessForm = useForm<BusinessForm>({
     resolver: zodResolver(businessSchema),
@@ -90,12 +100,28 @@ export function OrganiserRegisterForm() {
       await api.post('/organisers/register', payload)
       toast.success('Registration submitted! 🎉')
       setStep(3)
-    } catch {
-      // Error handled by interceptor
+    } catch (err: any) {
+      const message = err.response?.data?.error || 'Registration failed. Please try again.'
+      if (err.response?.status === 401) {
+        toast.error('Session expired. Please login again.')
+        router.push('/login')
+      } else {
+        toast.error(message)
+      }
     } finally {
       setLoading(false)
     }
   }
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) return null
 
   return (
     <div>

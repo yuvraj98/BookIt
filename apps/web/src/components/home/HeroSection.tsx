@@ -93,7 +93,7 @@ export function HeroSection() {
                 <span className="text-sm font-medium text-white">Pune</span>
               </div>
               <Link
-                href={`/events${query ? `?search=${encodeURIComponent(query)}` : ''}`}
+                href={`/events${query ? `?search=${encodeURIComponent(query)}` : ''}` as any}
                 className="m-2 btn-primary text-sm px-5 py-2.5 rounded-xl"
               >
                 Search
@@ -114,7 +114,7 @@ export function HeroSection() {
           {QUICK_SEARCHES.map((s) => (
             <Link
               key={s}
-              href={`/events?search=${encodeURIComponent(s)}`}
+              href={`/events?search=${encodeURIComponent(s)}` as any}
               className="text-sm text-[#a0a0a0] hover:text-brand-400 transition-colors duration-200 underline-offset-2 hover:underline"
             >
               {s}

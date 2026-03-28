@@ -18,8 +18,11 @@ import {
   CreditCard,
   QrCode,
   Building2,
+  Tag,
 } from 'lucide-react'
 import Link from 'next/link'
+import { QRTicket } from './QRTicket'
+import { PromoCodeInput } from './PromoCodeInput'
 
 type PaymentStep = 'details' | 'processing' | 'success' | 'failed'
 
@@ -53,6 +56,8 @@ export function PaymentSimulator({ bookingId }: { bookingId: string }) {
   const [selectedMethod, setSelectedMethod] = useState<'upi' | 'card' | 'netbanking'>('upi')
   const [upiId, setUpiId] = useState('')
   const [countdown, setCountdown] = useState<number | null>(null)
+  const [promoDiscount, setPromoDiscount] = useState(0)
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null)
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -249,14 +254,30 @@ export function PaymentSimulator({ bookingId }: { bookingId: string }) {
                 <span>Convenience Fee</span>
                 <span className="flex items-center"><IndianRupee size={12} className="mr-0.5" />{booking.convenience_fee}</span>
               </div>
+              {promoDiscount > 0 && (
+                <div className="flex justify-between text-emerald-400">
+                  <span className="flex items-center gap-1"><Tag size={12} /> Promo Discount ({appliedPromo})</span>
+                  <span className="flex items-center">- <IndianRupee size={12} className="mr-0.5" />{promoDiscount}</span>
+                </div>
+              )}
               <div className="divider" />
               <div className="flex justify-between font-bold text-lg text-white pt-1">
                 <span>Total</span>
                 <span className="flex items-center text-brand-400 font-display">
                   <IndianRupee size={18} className="mr-0.5" />
-                  {booking.total_amount}
+                  {Math.max(0, booking.total_amount - promoDiscount)}
                 </span>
               </div>
+            </div>
+
+            <div className="pt-2 border-t border-white/[0.06]">
+              <PromoCodeInput 
+                amount={booking.amount} 
+                eventId={booking.event_id}
+                appliedCode={appliedPromo}
+                onApply={(discount, code) => { setPromoDiscount(discount); setAppliedPromo(code); }}
+                onRemove={() => { setPromoDiscount(0); setAppliedPromo(null); }}
+              />
             </div>
           </div>
 
@@ -372,40 +393,35 @@ export function PaymentSimulator({ bookingId }: { bookingId: string }) {
 
       {/* ─── Step: Success ─────────────────────────────── */}
       {step === 'success' && (
-        <div className="text-center space-y-8 animate-in fade-in zoom-in py-8">
-          <div className="relative">
-            <div className="w-24 h-24 mx-auto rounded-full bg-emerald-500/20 flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.4)]">
-              <CheckCircle2 size={48} className="text-emerald-400" />
+        <div className="animate-in fade-in zoom-in py-8 space-y-8">
+          <div className="text-center mb-6">
+            <div className="relative inline-block">
+              <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/20 flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.3)]">
+                <CheckCircle2 size={40} className="text-emerald-400" />
+              </div>
+              <Sparkles size={20} className="text-amber-400 absolute top-0 right-[-20%] animate-bounce" />
             </div>
-            <Sparkles size={20} className="text-amber-400 absolute top-0 right-1/3 animate-bounce" />
-            <Sparkles size={14} className="text-brand-400 absolute bottom-2 left-1/3 animate-bounce delay-300" />
+            <h2 className="text-3xl font-display font-bold mt-4 mb-2">Payment Successful!</h2>
+            <p className="text-text-muted">Your ticket is ready. See you at the event!</p>
           </div>
+          
+          <QRTicket 
+            ticket={{
+              bookingId: booking.id,
+              qrToken: booking.qr_token,
+              eventTitle: booking.events.title,
+              venueName: booking.events.venue_name,
+              city: booking.events.city,
+              startsAt: booking.events.starts_at,
+              seatLabels: booking.seats?.map(s => s.label) || [],
+              totalAmount: Math.max(0, booking.total_amount - promoDiscount),
+              userName: user?.name || user?.phone || 'Guest'
+            }} 
+          />
 
-          <div>
-            <h2 className="text-3xl font-display font-bold mb-2">Booking Confirmed! 🎉</h2>
-            <p className="text-text-muted max-w-sm mx-auto">
-              Your tickets for <span className="text-white font-semibold">{booking.events.title}</span> have been booked successfully.
-            </p>
-          </div>
-
-          <div className="card p-6 text-left max-w-sm mx-auto space-y-4 bg-surface-800/60">
-            <div className="flex justify-between text-sm">
-              <span className="text-text-muted">Amount Paid</span>
-              <span className="font-bold text-white flex items-center gap-0.5"><IndianRupee size={14} />{booking.total_amount}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-text-muted">Booking ID</span>
-              <span className="font-mono text-xs text-text-subtle bg-surface-700 px-2 py-1 rounded">{booking.id.slice(0, 8)}...</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-text-muted">Seats</span>
-              <span className="text-white font-medium">{booking.seat_ids?.length || 0} ticket(s)</span>
-            </div>
-          </div>
-
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center mt-8">
             <Link href="/profile/bookings" className="btn-primary shadow-glow">
-              View My Tickets
+              View All Tickets
             </Link>
             <Link href="/events" className="btn-secondary">
               Browse More

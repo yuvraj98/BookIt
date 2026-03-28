@@ -8,6 +8,9 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Calendar, MapPin, Tag, Info, IndianRupee, Clock, Building2, ChevronRight, CheckCircle2, Share2, Copy, Twitter, MessageCircle, Timer } from 'lucide-react'
+import { InteractiveSeatMap } from '../bookings/InteractiveSeatMap'
+import { SocialShare } from '../shared/SocialShare'
+import { EventReviews } from './EventReviews'
 
 interface SeatSection {
   id: string
@@ -15,6 +18,8 @@ interface SeatSection {
   price: number
   available_seats: number
   total_seats: number
+  row_count: number
+  col_count: number
 }
 
 interface Seat {
@@ -219,41 +224,13 @@ export function EventDetail({ eventId }: { eventId: string }) {
 
         {/* Share Buttons */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-text-subtle uppercase tracking-wider font-bold mr-1">Share</span>
-          <button
-            onClick={() => {
-              const url = typeof window !== 'undefined' ? window.location.href : ''
-              const text = `Check out ${event.title} on BookIt!`
-              window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank')
-            }}
-            className="w-9 h-9 rounded-lg border border-white/10 bg-surface-800 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
-            title="Share on WhatsApp"
-          >
-            <MessageCircle size={16} />
-          </button>
-          <button
-            onClick={() => {
-              const url = typeof window !== 'undefined' ? window.location.href : ''
-              const text = `Check out ${event.title} on BookIt!`
-              window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank')
-            }}
-            className="w-9 h-9 rounded-lg border border-white/10 bg-surface-800 flex items-center justify-center text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all"
-            title="Share on Twitter"
-          >
-            <Twitter size={16} />
-          </button>
-          <button
-            onClick={() => {
-              if (typeof navigator !== 'undefined') {
-                navigator.clipboard.writeText(window.location.href)
-                toast.success('Link copied!')
-              }
-            }}
-            className="w-9 h-9 rounded-lg border border-white/10 bg-surface-800 flex items-center justify-center text-text-muted hover:bg-surface-700 hover:border-white/20 transition-all"
-            title="Copy Link"
-          >
-            <Copy size={16} />
-          </button>
+          <SocialShare 
+            data={{ 
+              title: event.title, 
+              text: `Check out ${event.title} on BookIt!`, 
+              url: typeof window !== 'undefined' ? window.location.href : 'https://bookit.in' 
+            }} 
+          />
         </div>
       </div>
 
@@ -395,51 +372,18 @@ export function EventDetail({ eventId }: { eventId: string }) {
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        {/* Seat Map abstraction (Simplified grid) */}
-                        <div className="bg-surface-900 rounded-2xl p-6 border border-white/[0.05] overflow-x-auto custom-scrollbar relative">
-                          {/* Screen curve indicator */}
-                          <div className="w-3/4 h-2 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto rounded-full mb-8 shadow-[0_4px_12px_rgba(255,255,255,0.1)] relative">
-                            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-widest text-text-subtle font-bold">Stage</span>
-                          </div>
-
-                          <div className="flex flex-col gap-2 items-center min-w-max mt-8">
-                            {/* Grouping seats by row assuming format A1, A2 etc */}
-                            {Array.from(new Set(seats?.map(s => s.label.charAt(0)))).map(rowChar => (
-                              <div key={rowChar} className="flex gap-2 items-center">
-                                <span className="w-6 text-center text-xs font-bold text-text-subtle">{rowChar}</span>
-                                <div className="flex gap-2">
-                                  {seats?.filter(s => s.label.startsWith(rowChar)).map(seat => {
-                                    const isSelected = selectedSeats.some(s => s.id === seat.id)
-                                    return (
-                                      <button
-                                        key={seat.id}
-                                        onClick={() => handleSeatToggle(seat)}
-                                        disabled={seat.status !== 'available'}
-                                        title={seat.label}
-                                        className={`w-8 h-8 rounded-t-md rounded-b-sm text-[10px] font-bold transition-all flex items-center justify-center
-                                          ${seat.status === 'locked' || seat.status === 'booked'
-                                            ? 'bg-surface-700 text-surface-900 cursor-not-allowed border border-surface-600'
-                                            : isSelected
-                                              ? 'bg-brand-500 text-white shadow-glow translate-y-[-2px] border border-brand-400'
-                                              : 'bg-surface-800 text-text-muted hover:bg-surface-700 hover:text-white border border-white/10 hover:border-brand-500/50'
-                                          }
-                                        `}
-                                      >
-                                        {isSelected ? <CheckCircle2 size={12} /> : seat.label.slice(1)}
-                                      </button>
-                                    )
-                                  })}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Legend */}
-                        <div className="flex justify-center gap-4 text-xs">
-                          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-t-sm bg-surface-800 border border-white/10"></div><span className="text-text-muted">Available</span></div>
-                          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-t-sm bg-brand-500 shadow-glow"></div><span className="text-text-muted">Selected</span></div>
-                          <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-t-sm bg-surface-700"></div><span className="text-text-muted">Sold</span></div>
+                        {/* Seat Map abstraction (Interactive component) */}
+                        <div className="w-full">
+                          <InteractiveSeatMap 
+                            sections={[selectedSection]} 
+                            seats={seats || []} 
+                            selectedIds={new Set(selectedSeats.map(s => s.id))} 
+                            onToggle={(id) => {
+                              const seat = seats?.find(s => s.id === id)
+                              if (seat) handleSeatToggle(seat)
+                            }} 
+                            maxSelectable={10} 
+                          />
                         </div>
 
                         {/* Checkout Footer */}
@@ -477,6 +421,7 @@ export function EventDetail({ eventId }: { eventId: string }) {
           </div>
         </div>
 
+        <EventReviews eventId={event.id} />
       </div>
     </div>
   )

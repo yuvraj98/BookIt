@@ -497,6 +497,32 @@ router.get('/events', authenticate, async (req: AuthenticatedRequest, res, next)
   }
 })
 
+// ─── GET /organisers/events/:id — Get single event details ──
+router.get('/events/:id', authenticate, async (req: AuthenticatedRequest, res, next) => {
+  try {
+    const { data: organiser } = await supabase
+      .from('organisers')
+      .select('id')
+      .eq('user_id', req.user!.id)
+      .single()
+
+    if (!organiser) throw new AppError(404, 'Not a registered organiser', 'NOT_ORGANISER')
+
+    const { data, error } = await supabase
+      .from('events')
+      .select('*, seat_sections(id, label, total_seats, available_seats, price, row_count, col_count)')
+      .eq('id', req.params.id)
+      .eq('organiser_id', organiser.id)
+      .single()
+
+    if (error || !data) throw new AppError(404, 'Event not found', 'NOT_FOUND')
+
+    res.json({ success: true, data })
+  } catch (err) {
+    next(err)
+  }
+})
+
 // ─── PUT /organisers/events/:id — Update event ──────────────
 router.put(
   '/events/:id',

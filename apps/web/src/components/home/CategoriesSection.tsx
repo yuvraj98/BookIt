@@ -44,7 +44,7 @@ export function CategoriesSection() {
             transition={{ delay: i * 0.04, duration: 0.3 }}
           >
             <Link
-              href={cat.href}
+              href={cat.href as any}
               className={`card p-4 flex flex-col items-center justify-center gap-2 text-center
                           cursor-pointer border border-white/[0.08] transition-all duration-300 ${cat.color}
                           hover:shadow-card-hover hover:-translate-y-0.5 group`}

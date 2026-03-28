@@ -4,6 +4,11 @@ import { eventsRouter } from './events.routes'
 import { organiserRouter } from './organiser.routes'
 import { adminRouter } from './admin.routes'
 import { bookingsRouter } from './bookings.routes'
+import { wishlistRouter } from './wishlist.routes'
+import { notificationsRouter } from './notifications.routes'
+import { promoRouter } from './promo.routes'
+import { referralRouter } from './referral.routes'
+import { reviewsRouter } from './reviews.routes'
 
 const router = Router()
 
@@ -13,6 +18,10 @@ router.use('/events', eventsRouter)
 router.use('/organisers', organiserRouter)
 router.use('/admin', adminRouter)
 router.use('/bookings', bookingsRouter)
+router.use('/wishlist', wishlistRouter)
+router.use('/notifications', notificationsRouter)
+router.use('/promo', promoRouter)
+router.use('/referrals', referralRouter)
+router.use('/reviews', reviewsRouter)
 
 export { router as apiRouter }
-

@@ -20,16 +20,17 @@ async function runMigration() {
 
   try {
     await client.connect()
-    
+
     // Read the SQL file
     const sqlPath = path.join(__dirname, 'src', 'db', '003_sprint3_bookings.sql')
     console.log(`📄 Reading SQL from ${sqlPath}`)
     const sqlScript = fs.readFileSync(sqlPath, 'utf8')
-    
+
     console.log('⏳ Executing queries...')
     const res = await client.query(sqlScript)
-    console.log('✅ Migration applied successfully!', res[res.length - 1]?.rows || 'Done.')
-    
+    const finalResult = Array.isArray(res) ? res[res.length - 1] : res;
+    console.log('✅ Migration applied successfully!', finalResult?.rows || 'Done.')
+
   } catch (err) {
     console.error('❌ Error executing migration:', err)
   } finally {
