@@ -111,6 +111,24 @@ export function OrganiserDashboardContent() {
         />
       </div>
 
+      {/* Analytics Link */}
+      <div className="mb-12">
+        <Link href={"/organiser/analytics" as any} className="card p-5 flex items-center justify-between group hover:bg-surface-800/80 transition-colors cursor-pointer border-brand-500/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
+              <BarChart3 size={18} className="text-brand-400" />
+            </div>
+            <div>
+              <h3 className="text-white font-medium group-hover:text-brand-400 transition-colors">Revenue Analytics</h3>
+              <p className="text-xs text-text-muted">Per-event revenue, commissions, and payout breakdown</p>
+            </div>
+          </div>
+          <div className="text-brand-400 group-hover:translate-x-1 transition-transform">
+            <BarChart3 size={20} />
+          </div>
+        </Link>
+      </div>
+
       {/* Recent Events */}
       <div className="card p-6 md:p-8">
         <div className="flex justify-between items-center mb-6">

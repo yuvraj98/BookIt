@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { Calendar, MapPin, Tag, Info, IndianRupee, Clock, Building2, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { Calendar, MapPin, Tag, Info, IndianRupee, Clock, Building2, ChevronRight, CheckCircle2, Share2, Copy, Twitter, MessageCircle, Timer } from 'lucide-react'
 
 interface SeatSection {
   id: string
@@ -202,6 +202,58 @@ export function EventDetail({ eventId }: { eventId: string }) {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* ─── Share & Countdown Bar ──────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8 md:mb-12">
+        {/* Countdown */}
+        {!isPast && (
+          <CountdownTimer targetDate={dateObject} />
+        )}
+        {isPast && (
+          <div className="flex items-center gap-2 text-red-400 text-sm font-medium">
+            <Clock size={16} /> Event has ended
+          </div>
+        )}
+
+        {/* Share Buttons */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-text-subtle uppercase tracking-wider font-bold mr-1">Share</span>
+          <button
+            onClick={() => {
+              const url = typeof window !== 'undefined' ? window.location.href : ''
+              const text = `Check out ${event.title} on BookIt!`
+              window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank')
+            }}
+            className="w-9 h-9 rounded-lg border border-white/10 bg-surface-800 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
+            title="Share on WhatsApp"
+          >
+            <MessageCircle size={16} />
+          </button>
+          <button
+            onClick={() => {
+              const url = typeof window !== 'undefined' ? window.location.href : ''
+              const text = `Check out ${event.title} on BookIt!`
+              window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank')
+            }}
+            className="w-9 h-9 rounded-lg border border-white/10 bg-surface-800 flex items-center justify-center text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all"
+            title="Share on Twitter"
+          >
+            <Twitter size={16} />
+          </button>
+          <button
+            onClick={() => {
+              if (typeof navigator !== 'undefined') {
+                navigator.clipboard.writeText(window.location.href)
+                toast.success('Link copied!')
+              }
+            }}
+            className="w-9 h-9 rounded-lg border border-white/10 bg-surface-800 flex items-center justify-center text-text-muted hover:bg-surface-700 hover:border-white/20 transition-all"
+            title="Copy Link"
+          >
+            <Copy size={16} />
+          </button>
         </div>
       </div>
 
@@ -425,6 +477,49 @@ export function EventDetail({ eventId }: { eventId: string }) {
           </div>
         </div>
 
+      </div>
+    </div>
+  )
+}
+
+function CountdownTimer({ targetDate }: { targetDate: Date }) {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+
+  useEffect(() => {
+    const update = () => {
+      const diff = Math.max(0, targetDate.getTime() - Date.now())
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000),
+      })
+    }
+    update()
+    const interval = setInterval(update, 1000)
+    return () => clearInterval(interval)
+  }, [targetDate])
+
+  const tiles = [
+    { value: timeLeft.days, label: 'Days' },
+    { value: timeLeft.hours, label: 'Hrs' },
+    { value: timeLeft.minutes, label: 'Min' },
+    { value: timeLeft.seconds, label: 'Sec' },
+  ]
+
+  return (
+    <div className="flex items-center gap-2">
+      <Timer size={16} className="text-brand-400 shrink-0" />
+      <span className="text-xs text-text-subtle uppercase tracking-wider font-bold mr-1 hidden sm:inline">Starts in</span>
+      <div className="flex gap-1.5">
+        {tiles.map((t) => (
+          <div key={t.label} className="text-center">
+            <div className="bg-surface-800 border border-white/10 rounded-lg w-11 h-10 flex items-center justify-center">
+              <span className="text-lg font-display font-bold text-white tabular-nums">{String(t.value).padStart(2, '0')}</span>
+            </div>
+            <span className="text-[9px] text-text-subtle uppercase tracking-wider font-bold mt-1 block">{t.label}</span>
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -250,6 +250,67 @@ router.get(
   }
 )
 
+// ─── GET /organisers/dashboard/analytics — Per-event analytics ─
+router.get(
+  '/dashboard/analytics',
+  authenticate,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      const { data: organiser } = await supabase
+        .from('organisers')
+        .select('id, commission_rate')
+        .eq('user_id', req.user!.id)
+        .single()
+
+      if (!organiser) throw new AppError(404, 'Not a registered organiser', 'NOT_ORGANISER')
+
+      const { data: events } = await supabase
+        .from('events')
+        .select('id, title, status, total_capacity, available_seats, min_price, starts_at')
+        .eq('organiser_id', organiser.id)
+        .order('starts_at', { ascending: false })
+
+      if (!events || events.length === 0) {
+        return res.json({ success: true, data: [] })
+      }
+
+      const eventIds = events.map(e => e.id)
+
+      const { data: bookings } = await supabase
+        .from('bookings')
+        .select('event_id, total_amount, status')
+        .in('event_id', eventIds)
+
+      const commissionRate = organiser.commission_rate || 0.08
+
+      const analytics = events.map(event => {
+        const eventBookings = bookings?.filter(b => b.event_id === event.id) || []
+        const confirmed = eventBookings.filter(b => b.status === 'confirmed')
+        const revenue = confirmed.reduce((sum, b) => sum + (b.total_amount || 0), 0)
+        const ticketsSold = event.total_capacity - event.available_seats
+
+        return {
+          id: event.id,
+          title: event.title,
+          status: event.status,
+          starts_at: event.starts_at,
+          total_capacity: event.total_capacity,
+          tickets_sold: ticketsSold,
+          total_bookings: eventBookings.length,
+          confirmed_bookings: confirmed.length,
+          gross_revenue: revenue,
+          commission: Math.round(revenue * commissionRate),
+          net_payout: Math.round(revenue * (1 - commissionRate)),
+        }
+      })
+
+      res.json({ success: true, data: analytics })
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
 // ─── Event Schemas ───────────────────────────────────────────
 const seatSectionSchema = z.object({
   label: z.string().min(1, 'Section label required').max(100),
