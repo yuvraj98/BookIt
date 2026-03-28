@@ -48,7 +48,7 @@ interface BookingDetail {
 export function PaymentSimulator({ bookingId }: { bookingId: string }) {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { isAuthenticated, isLoading: authLoading } = useAuthStore()
+  const { isAuthenticated, isLoading: authLoading, user } = useAuthStore()
   const [step, setStep] = useState<PaymentStep>('details')
   const [selectedMethod, setSelectedMethod] = useState<'upi' | 'card' | 'netbanking'>('upi')
   const [upiId, setUpiId] = useState('')
@@ -222,6 +222,19 @@ export function PaymentSimulator({ bookingId }: { bookingId: string }) {
                     </span>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {user && user.loyalty_coins > 0 && (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={16} className="text-amber-400" />
+                  <div>
+                    <p className="text-sm font-medium text-white">Loyalty Coins</p>
+                    <p className="text-[10px] text-amber-400/70">Available for future redemption</p>
+                  </div>
+                </div>
+                <span className="text-lg font-display font-bold text-amber-400">{user.loyalty_coins}</span>
               </div>
             )}
 
