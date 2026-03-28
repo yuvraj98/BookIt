@@ -9,6 +9,9 @@ import { notificationsRouter } from './notifications.routes'
 import { promoRouter } from './promo.routes'
 import { referralRouter } from './referral.routes'
 import { reviewsRouter } from './reviews.routes'
+import { moviesRouter } from './movies.routes'
+import { theatresRouter } from './theatres.routes'
+import { showsRouter } from './shows.routes'
 
 const router = Router()
 
@@ -23,5 +26,8 @@ router.use('/notifications', notificationsRouter)
 router.use('/promo', promoRouter)
 router.use('/referrals', referralRouter)
 router.use('/reviews', reviewsRouter)
+router.use('/movies', moviesRouter)
+router.use('/theatres', theatresRouter)
+router.use('/shows', showsRouter)
 
 export { router as apiRouter }

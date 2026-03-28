@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/Footer'
 import { HeroSection } from '@/components/home/HeroSection'
 import { CategoriesSection } from '@/components/home/CategoriesSection'
 import { FeaturedEvents } from '@/components/home/FeaturedEvents'
+import { FeaturedMovies } from '@/components/home/FeaturedMovies'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { TestimonialsSection } from '@/components/home/TestimonialsSection'
 import { OrganizerCTA } from '@/components/home/OrganizerCTA'
@@ -16,6 +17,7 @@ export default function HomePage() {
         <HeroSection />
         <StatsSection />
         <CategoriesSection />
+        <FeaturedMovies />
         <FeaturedEvents />
         <HowItWorks />
         <TestimonialsSection />

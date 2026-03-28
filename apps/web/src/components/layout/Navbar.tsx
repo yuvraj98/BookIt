@@ -12,6 +12,7 @@ const CITIES = ['Pune', 'Mumbai', 'Bengaluru', 'Hyderabad', 'Delhi']
 
 const NAV_LINKS = [
   { label: 'Events', href: '/events' },
+  { label: 'Movies', href: '/movies' },
   { label: 'Comedy', href: '/events?category=comedy' },
   { label: 'Music', href: '/events?category=music' },
   { label: 'Sports', href: '/events?category=sports' },

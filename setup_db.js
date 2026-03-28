@@ -18,6 +18,8 @@ async function run() {
     { file: './apps/api/src/db/001_initial_schema.sql', label: '001 — Initial Schema' },
     { file: './apps/api/src/db/002_sprint2_organiser.sql', label: '002 — Sprint 2 Organiser' },
     { file: './apps/api/src/db/003_sprint3_bookings.sql', label: '003 — Sprint 3 Bookings' },
+    { file: './apps/api/src/db/004_new_features.sql', label: '004 — Sprint 4 Features' },
+    { file: './apps/api/src/db/005_movie_booking.sql', label: '005 — Movie Booking' },
   ];
 
   for (const { file, label } of migrations) {
