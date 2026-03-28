@@ -86,6 +86,26 @@ export function AdminEventsContent() {
     rejectMutation.mutate({ id, reason })
   }
 
+  const takedownMutation = useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+      const res = await api.post(`/admin/events/${id}/takedown`, { reason })
+      return res.data
+    },
+    onSuccess: (res) => {
+      toast.success(res.message || 'Event taken down')
+      queryClient.invalidateQueries({ queryKey: ['adminEvents'] })
+      queryClient.invalidateQueries({ queryKey: ['adminStats'] })
+    },
+    onError: (err: any) => toast.error(err.response?.data?.error || 'Takedown failed'),
+  })
+
+  const handleTakedown = (id: string, title: string) => {
+    const reason = prompt(`Reason for taking down "${title}":`)
+    if (!reason) return
+    if (reason.length < 5) return toast.error('Reason must be at least 5 characters')
+    takedownMutation.mutate({ id, reason })
+  }
+
   return (
     <div className="p-6 md:p-10 animate-in fade-in">
       <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
@@ -198,8 +218,9 @@ export function AdminEventsContent() {
                           )}
                           {!isPending && evt.status === 'approved' && (
                              <button
-                               onClick={() => handleReject(evt.id)}
-                               className="text-[10px] uppercase font-bold text-red-400 px-3 py-1.5 rounded-lg border border-red-500/20 hover:bg-red-500/10"
+                               onClick={() => handleTakedown(evt.id, evt.title)}
+                               disabled={takedownMutation.isPending}
+                               className="text-[10px] uppercase font-bold text-red-400 px-3 py-1.5 rounded-lg border border-red-500/20 hover:bg-red-500/10 transition-colors"
                              >
                                Take Down
                              </button>

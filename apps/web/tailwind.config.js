@@ -61,6 +61,7 @@ module.exports = {
         shimmer:   { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
         float:     { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } },
         gradient:  { '0%, 100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } },
+        progress:  { from: { width: '0%' }, to: { width: '100%' } },
       },
       backgroundSize: {
         '200%': '200%',

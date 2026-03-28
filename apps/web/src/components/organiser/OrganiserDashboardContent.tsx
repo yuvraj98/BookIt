@@ -118,7 +118,7 @@ export function OrganiserDashboardContent() {
             <Clock size={20} className="text-brand-500" />
             Recent Events
           </h2>
-          <Link href="/events" className="text-sm text-brand-400 hover:text-brand-300 font-medium">
+          <Link href={"/organiser/events" as any} className="text-sm text-brand-400 hover:text-brand-300 font-medium">
             View All
           </Link>
         </div>

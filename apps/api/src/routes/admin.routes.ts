@@ -387,6 +387,51 @@ router.post(
   }
 )
 
+// ─── POST /admin/events/:id/takedown — Take down approved event
+const takedownEventSchema = z.object({
+  reason: z.string().min(5, 'Reason must be at least 5 characters').max(500),
+})
+
+router.post(
+  '/events/:id/takedown',
+  validate(takedownEventSchema),
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      const { reason } = req.body
+
+      const { data, error } = await supabase
+        .from('events')
+        .update({ status: 'cancelled' })
+        .eq('id', req.params.id)
+        .eq('status', 'approved')
+        .select('*, organisers(business_name)')
+        .single()
+
+      if (error) throw new AppError(500, 'Failed to take down event', 'DB_ERROR')
+      if (!data) throw new AppError(404, 'Event not found or not currently live', 'NOT_FOUND')
+
+      // Audit log
+      await supabase.from('admin_logs').insert({
+        admin_id: req.user!.id,
+        action: 'event_takedown',
+        target_id: req.params.id,
+        target_type: 'event',
+        reason,
+      })
+
+      logger.info(`Event taken down: "${data.title}" — reason: ${reason}`)
+
+      res.json({
+        success: true,
+        data,
+        message: `"${data.title}" has been taken down`,
+      })
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
 // ─── GET /admin/logs — Audit log ─────────────────────────────
 router.get('/logs', async (req: AuthenticatedRequest, res, next) => {
   try {
