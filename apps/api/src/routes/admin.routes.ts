@@ -134,6 +134,17 @@ router.post(
         meta: { commission_rate: data.commission_rate },
       })
 
+      // Notify organiser
+      await supabase.from('notifications').insert({
+        user_id: data.user_id,
+        type: 'organiser_approved',
+        channel: 'email',
+        payload: {
+          title: 'Account Approved! 🎉',
+          message: 'Your organiser account has been approved. You can now publish events.',
+        }
+      })
+
       logger.info(`Organiser approved: ${data.business_name} by admin ${req.user!.id}`)
 
       res.json({
@@ -313,7 +324,7 @@ router.post(
         })
         .eq('id', req.params.id)
         .in('status', ['pending_approval', 'draft'])
-        .select('*, organisers(business_name)')
+        .select('*, organisers(user_id, business_name)')
         .single()
 
       if (error) throw new AppError(500, 'Failed to approve event', 'DB_ERROR')
@@ -327,6 +338,20 @@ router.post(
         target_type: 'event',
         reason: note || 'Approved',
       })
+
+      // Notify user
+      if (data.organisers && (data.organisers as any).user_id) {
+        await supabase.from('notifications').insert({
+          user_id: (data.organisers as any).user_id,
+          type: 'event_approved',
+          channel: 'email',
+          payload: {
+            title: 'Event Approved! ✅',
+            message: `Your event "${data.title}" is now live and can be booked by users.`,
+            event_id: data.id
+          }
+        })
+      }
 
       logger.info(`Event approved: "${data.title}" by admin ${req.user!.id}`)
 
@@ -359,7 +384,7 @@ router.post(
           status: 'cancelled',
         })
         .eq('id', req.params.id)
-        .select('*, organisers(business_name)')
+        .select('*, organisers(user_id, business_name)')
         .single()
 
       if (error) throw new AppError(500, 'Failed to reject event', 'DB_ERROR')
@@ -373,6 +398,20 @@ router.post(
         target_type: 'event',
         reason,
       })
+
+      // Notify user
+      if (data.organisers && (data.organisers as any).user_id) {
+        await supabase.from('notifications').insert({
+          user_id: (data.organisers as any).user_id,
+          type: 'event_rejected',
+          channel: 'email',
+          payload: {
+            title: 'Event Update',
+            message: `Your event "${data.title}" was not approved. Support contact: support@bookit.com`,
+            event_id: data.id
+          }
+        })
+      }
 
       logger.info(`Event rejected: "${data.title}" — reason: ${reason}`)
 

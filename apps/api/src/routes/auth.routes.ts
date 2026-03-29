@@ -193,4 +193,52 @@ router.post('/logout', authenticate, async (_req, res) => {
   res.json({ success: true, message: 'Logged out successfully' })
 })
 
+// ─── DEV ONLY: Quick login without OTP ────────────────────────
+if (process.env.NODE_ENV === 'development') {
+  const devLoginSchema = z.object({
+    phone: z.string().regex(/^\+91[6-9]\d{9}$/),
+  })
+
+  router.post('/dev-login', validate(devLoginSchema), async (req, res, next) => {
+    try {
+      const { phone } = req.body
+
+      // Find or create user
+      let { data: user } = await supabase
+        .from('users')
+        .select('*')
+        .eq('phone', phone)
+        .single()
+
+      if (!user) {
+        const { data: newUser, error } = await supabase
+          .from('users')
+          .insert({ phone, role: 'customer', loyalty_coins: 0 })
+          .select()
+          .single()
+
+        if (error) throw new AppError(500, 'Failed to create user', 'USER_CREATE_FAILED')
+        user = newUser
+      }
+
+      const { accessToken, refreshToken } = generateTokens(user.id, user.phone, user.role)
+
+      logger.info(`[DEV] Login: ${user.name || phone} (${user.role})`)
+
+      res.json({
+        success: true,
+        data: {
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          user,
+        },
+      })
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  logger.info('🔓 Dev login enabled: POST /api/v1/auth/dev-login')
+}
+
 export { router as authRouter }

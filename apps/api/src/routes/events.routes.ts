@@ -25,7 +25,7 @@ const eventFiltersSchema = z.object({
 router.get('/', validate(eventFiltersSchema, 'query'), async (req, res, next) => {
   try {
     const { city, category, date_from, date_to, price_min, price_max, page, limit, featured } =
-      req.query as z.infer<typeof eventFiltersSchema>
+      req.query as unknown as z.infer<typeof eventFiltersSchema>
 
     let query = supabase
       .from('events')

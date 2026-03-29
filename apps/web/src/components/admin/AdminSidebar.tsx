@@ -11,7 +11,8 @@ import {
   X,
   Shield,
   Ticket,
-  LogOut
+  LogOut,
+  FileText
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -19,6 +20,7 @@ const navItems = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Overview' },
   { href: '/admin/organisers', icon: Users, label: 'Organisers' },
   { href: '/admin/events', icon: CalendarDays, label: 'Events' },
+  { href: '/admin/logs', icon: FileText, label: 'Audit Logs' },
 ]
 
 export function AdminSidebar() {
@@ -62,7 +64,7 @@ export function AdminSidebar() {
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={item.href as any}
               onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
                 isActive

@@ -57,7 +57,15 @@ export function createApp(): Application {
     })
   )
 
-  // ─── Health check ─────────────────────────────────────────
+  // ─── Root & Health check ──────────────────────────────────
+  app.get('/', (_req: Request, res: Response) => {
+    res.json({
+      message: 'Welcome to BookIt API',
+      status: 'active',
+      docs: '/api/v1',
+    })
+  })
+
   app.get('/health', (_req: Request, res: Response) => {
     res.json({
       status: 'ok',

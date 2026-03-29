@@ -1,0 +1,81 @@
+﻿≡ƒî▒ Connecting to database...
+Γ£à Connected!
+
+≡ƒº╣ Cleaning existing data...
+   Done.
+
+≡ƒæñ Creating users...
+   Γ£à admin: Raj Chauhan
+   Γ£à organiser: Priya Sharma
+   Γ£à organiser: Amit Deshmukh
+   Γ£à customer: Sneha Kulkarni
+   Γ£à customer: Vikram Patil
+   Γ£à customer: Ananya Joshi
+   Γ£à customer: Rohan Mehta
+   Γ£à organiser: Kavita Nair
+   Γ£à customer: Deepak Gupta
+   Γ£à customer: Meera Reddy
+
+≡ƒÅó Creating organisers...
+   Γ£à Pune Comedy Club (verified: true)
+   Γ£à Mumbai Live Events (verified: true)
+   Γ£à Bangalore Arts Collective (verified: false)
+
+≡ƒÄ¬ Creating events...
+   Γ£à [approved] Laugh Riot: Stand-Up Comedy Night
+   Γ£à [approved] Arijit Singh Live in Concert
+   Γ£à [approved] IPL Screening: CSK vs MI
+   Γ£à [approved] Pottery & Ceramic Workshop
+   Γ£à [approved] Pune Food & Music Festival
+   Γ£à [approved] Drishyam 3 ΓÇö Premiere Night
+   Γ£à [approved] Shakespeare in the Park: Hamlet
+   Γ£à [approved] Sunrise Yoga & Meditation Retreat
+   Γ£à [approved] TechSpark 2026 ΓÇö AI & Startups Summit
+   Γ£à [approved] Kids Summer Carnival
+   Γ£à [pending_approval] Bangalore Art Walk
+   Γ£à [pending_approval] Electronic Night: DJ Snake India Tour
+   Γ£à [draft] Marathi Natya Utsav
+   Γ£à [completed] New Year Comedy Bash 2026
+
+≡ƒÆ║ Creating seat sections...
+   Γ£à 24 seat sections created
+
+≡ƒ¬æ Generating individual seats...
+   Γ£à 1550 individual seats created
+
+≡ƒÄ½ Creating sample bookings...
+   Γ£à 8 bookings created
+
+≡ƒÆ│ Creating payment records...
+   Γ£à 7 payment records created
+
+Γ¡É Creating reviews...
+   Γ£à 2 reviews created
+
+≡ƒöö Creating notifications...
+   Γ£à 4 notifications created
+
+≡ƒôï Creating admin logs...
+   Γ£à 4 admin log entries created
+
+==================================================
+SEED DATA COMPLETE!
+==================================================
+
+Summary:
+   10 users (1 admin, 3 organisers, 6 customers)
+   3 organisers (2 verified, 1 pending)
+   14 events (10 approved, 2 pending, 1 draft, 1 completed)
+   24 seat sections
+   1550 individual seats with seat maps
+   8 bookings
+   7 payments
+   2 reviews
+   4 notifications
+   4 admin logs
+
+Test Accounts:
+   Admin:     +919876543210 (Raj Chauhan)
+   Organiser: +919876543211 (Priya Sharma)
+   Customer:  +919876543213 (Sneha Kulkarni)
+

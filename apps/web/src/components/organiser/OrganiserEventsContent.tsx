@@ -23,6 +23,7 @@ import {
   ChevronRight,
   Ticket,
   TrendingUp,
+  Edit2
 } from 'lucide-react'
 
 interface EventItem {
@@ -229,8 +230,14 @@ export function OrganiserEventsContent() {
                           Submit
                         </button>
                       )}
+                      {event.status !== 'approved' && (
+                        <Link href={`/organiser/events/${event.id}/edit` as any} className="btn-secondary py-2 px-4 text-sm bg-surface-700">
+                          <Edit2 size={14} />
+                          Edit
+                        </Link>
+                      )}
                       {event.status === 'approved' && (
-                        <Link href={`/events/${event.id}`} className="btn-secondary py-2 px-4 text-sm bg-surface-700">
+                        <Link href={`/events/${event.id}` as any} className="btn-secondary py-2 px-4 text-sm bg-surface-700">
                           <Eye size={14} />
                           View Live
                         </Link>

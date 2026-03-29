@@ -5,11 +5,14 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Ticket, Menu, X, MapPin, ChevronDown, CircleUserRound, LogOut, Crown, Shield, Coins, LayoutDashboard } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
+import { NotificationDropdown } from './NotificationDropdown'
+import { ThemeToggle } from '../shared/ThemeToggle'
 
 const CITIES = ['Pune', 'Mumbai', 'Bengaluru', 'Hyderabad', 'Delhi']
 
 const NAV_LINKS = [
   { label: 'Events', href: '/events' },
+  { label: 'Movies', href: '/movies' },
   { label: 'Comedy', href: '/events?category=comedy' },
   { label: 'Music', href: '/events?category=music' },
   { label: 'Sports', href: '/events?category=sports' },
@@ -137,9 +140,15 @@ export function Navbar() {
             </nav>
 
             {/* Auth / Profile */}
+            {isAuthenticated && user && (
+              <div className="hidden lg:block mr-1">
+                <NotificationDropdown />
+              </div>
+            )}
             <div className="hidden lg:flex items-center gap-3">
+              <ThemeToggle />
               {isAuthenticated && user ? (
-                <div className="relative" ref={profileRef}>
+                  <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setProfileOpen(!profileOpen)}
                     className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5
@@ -240,6 +249,12 @@ export function Navbar() {
                 </>
               )}
             </div>
+
+            {isAuthenticated && user && (
+              <div className="flex items-center lg:hidden mr-1">
+                <NotificationDropdown />
+              </div>
+            )}
 
             {/* Mobile toggle */}
             <button

@@ -211,6 +211,19 @@ router.post(
 
       logger.info(`Booking confirmed: ${booking.id} — payment: ${razorpay_payment_id}`)
 
+      // Create notification
+      await supabase.from('notifications').insert({
+        user_id: req.user!.id,
+        type: 'booking_confirmed',
+        channel: 'email', // In-app for our purposes
+        payload: {
+          title: 'Booking Confirmed!',
+          message: `Your booking for ${booking.seat_ids.length} tickets is confirmed.`,
+          booking_id: booking.id,
+          event_id: booking.event_id,
+        }
+      })
+
       res.json({
         success: true,
         data: confirmed,
