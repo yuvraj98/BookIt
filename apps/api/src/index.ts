@@ -7,9 +7,9 @@ const PORT = parseInt(process.env.PORT || '4000', 10)
 
 async function bootstrap() {
   try {
-    // Connect Redis
-    await connectRedis()
-    logger.info('✅ Redis connected')
+    // Connect Redis removed for standalone local run
+    // await connectRedis()
+    // logger.info('✅ Redis connected')
 
     const app = createApp()
 
